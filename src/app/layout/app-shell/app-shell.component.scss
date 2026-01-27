@@ -1,0 +1,167 @@
+.shell {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 260px;
+  background: #0F172B;
+  color: #eaf0ff;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.brand {
+  padding: 12px 10px;
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-img {
+  max-width: 180px;
+  width: 100%;
+  height: auto;
+  transition: all 0.25s ease;
+}
+
+.logo-img.collapsed {
+  max-width: 42px;
+}
+
+.brand-text .title { font-weight: 800; font-size: 13px; line-height: 1.1; }
+.brand-text .sub { font-weight: 600; font-size: 12px; opacity: 0.85; }
+
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.nav {
+  padding-top: 8px;
+
+  a[mat-list-item] {
+    margin: 2px 8px;
+    border-radius: 12px;
+    opacity: 0.92;
+
+    /* ✅ base: fuerza el color del texto real en MDC */
+    .mdc-list-item__primary-text {
+      color: #eaf0ff !important;
+    }
+
+    mat-icon {
+      color: #eaf0ff !important;
+      opacity: 0.95;
+    }
+
+    &:hover {
+      background: rgba(255,255,255,0.08);
+      opacity: 1;
+    }
+
+    &.active {
+      background: rgba(255,255,255,0.12);
+      opacity: 1;
+
+      /* ✅ active: el texto SÍ se vuelve blanco (tu bug) */
+      .mdc-list-item__primary-text {
+        color: #ffffff !important;
+        font-weight: 700;
+      }
+
+      mat-icon {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  /* placeholders deshabilitados */
+  .disabled-link {
+    cursor: default;
+    opacity: 0.45 !important;
+
+    &:hover {
+      background: transparent !important;
+    }
+  }
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  padding: 12px 14px;
+  opacity: 0.85;
+  .small { font-size: 12px; }
+  .muted { opacity: 0.7; }
+}
+
+.content {
+  background: #f5f7fb;
+}
+
+.topbar {
+  height: 64px;
+  display: flex;
+  gap: 10px;
+  padding: 0 12px;
+  border-bottom: 1px solid lightgray;
+}
+
+.crumb-title { font-weight: 800; }
+.spacer { flex: 1; }
+
+.user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-transform: none;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.18);
+  font-weight: 800;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  .name { font-size: 13px; font-weight: 700; }
+  .role { font-size: 11px; opacity: 0.85; }
+}
+
+.router-wrap {
+  padding: 14px;
+  min-height: calc(100vh - 64px - 46px);
+}
+
+.footer {
+  height: 46px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  font-size: 12px;
+  .muted { opacity: 0.7; }
+}

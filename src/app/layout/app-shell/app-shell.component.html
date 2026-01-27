@@ -1,0 +1,120 @@
+<mat-sidenav-container class="shell">
+
+  <!-- SIDEBAR -->
+  <mat-sidenav class="sidenav" mode="side" [opened]="true" [class.collapsed]="collapsed()">
+    <div class="brand">
+      <div class="logo">
+        <img
+          src="assets/images/logop.png"
+          alt="Universidad de La Serena"
+          class="logo-img"
+          [class.collapsed]="collapsed()"
+        />
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="nav-scroll">
+      <mat-nav-list class="nav">
+
+        <!-- INICIO (placeholder - no navega a nada por ahora) -->
+        <a
+        mat-list-item
+        routerLink="/inicio"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >
+        <mat-icon matListItemIcon>home</mat-icon>
+        <span matListItemTitle *ngIf="!collapsed()">Inicio</span>
+        </a>
+
+        <!-- ✅ OAME = dashboard -->
+        <a
+          mat-list-item
+          routerLink="/oame/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          <mat-icon matListItemIcon>insights</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed()">OAME</span>
+        </a>
+
+        <!-- placeholders para otros módulos -->
+        <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">
+          <mat-icon matListItemIcon>domain</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed()">AGDDFI</span>
+        </a>
+
+        <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">
+          <mat-icon matListItemIcon>school</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed()">DGAE</span>
+        </a>
+
+        <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">
+          <mat-icon matListItemIcon>shield</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed()">UMD</span>
+        </a>
+
+      </mat-nav-list>
+    </div>
+
+    <div class="sidenav-footer" *ngIf="!collapsed()">
+      <div class="small">AdminUSerena</div>
+      <div class="small muted">v0.1</div>
+    </div>
+  </mat-sidenav>
+
+  <!-- CONTENT -->
+  <mat-sidenav-content class="content">
+
+    <!-- HEADER -->
+    <mat-toolbar class="topbar" color="primary">
+      <button mat-icon-button (click)="toggleSidebar()">
+       <!-- <mat-icon>menu</mat-icon>-->
+      </button>
+
+      <div class="crumb">
+        <span class="crumb-title">Dashboard</span>
+      </div>
+
+      <span class="spacer"></span>
+
+      <button mat-icon-button [matBadge]="1" matBadgeColor="warn">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user">
+        <div class="avatar">EV</div>
+        <div class="user-text">
+          <div class="name">[Nombre apellido]</div>
+          <div class="role">[Unidad]</div>
+        </div>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Perfil</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          <span>Salir</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- BODY -->
+    <div class="router-wrap">
+      <router-outlet></router-outlet>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div>Universidad de La Serena · AdminUSerena</div>
+      <div class="muted">© {{ currentYear }}</div>
+    </footer>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

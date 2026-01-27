@@ -1,0 +1,158 @@
+.page {
+  padding: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.title h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sub {
+  margin: 4px 0 0;
+  opacity: 0.75;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.w-sm { width: 140px; }
+.w-md { width: 260px; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.kpi {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  align-items: center;
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.04);
+}
+
+.kpi-title {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.panel {
+  padding: 12px;
+}
+
+.panel-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-wrap {
+  height: 320px;
+  position: relative;
+}
+
+.panel-side .chart-wrap {
+  height: 320px;
+}
+
+.legend-note {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+  align-self: center;
+
+}
+
+.table-panel {
+  margin-top: 12px;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.badge-green { background: rgba(0, 200, 83, 0.12); }
+.badge-amber { background: rgba(255, 193, 7, 0.18); }
+.badge-red   { background: rgba(244, 67, 54, 0.14); }
+.badge-muted { background: rgba(0,0,0,0.06); }
+
+.error {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  margin: 12px 0;
+}
+
+/* ✅ nuevo: mensajes cuando no hay data (para que no parezca “en blanco”) */
+.chart-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ✅ mejora canvas: ocupa bien el contenedor */
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid { grid-template-columns: 1fr; }
+}

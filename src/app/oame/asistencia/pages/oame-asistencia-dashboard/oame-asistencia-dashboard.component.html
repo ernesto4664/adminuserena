@@ -1,0 +1,171 @@
+<div class="page">
+  <div class="page-header">
+    <div class="title">
+      <h1>OAME · Dashboard</h1>
+      <p class="sub">Dashboard agregado por unidad (semestre)</p>
+    </div>
+
+    <div class="filters">
+      <mat-form-field appearance="outline" class="w-sm">
+        <mat-label>Semestre</mat-label>
+        <mat-select [formControl]="semestreCtrl">
+          <mat-option [value]="20251">20251</mat-option>
+          <mat-option [value]="20252">20252</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-md">
+        <mat-label>Buscar unidad</mat-label>
+        <input matInput [formControl]="qCtrl" placeholder="Ej: ciencias, admisión..." />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (error()) {
+    <mat-card class="error">
+      <mat-icon color="warn">error</mat-icon>
+      <div>{{ error() }}</div>
+    </mat-card>
+  }
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <mat-card class="kpi">
+      <div class="kpi-icon"><mat-icon>percent</mat-icon></div>
+      <div class="kpi-body">
+        <div class="kpi-title">% Asistencia (ULS)</div>
+        <div class="kpi-value">{{ porcentajeGlobal() ?? '—' }}</div>
+        <div class="kpi-sub">Promedio ponderado por clases</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="kpi-icon"><mat-icon>groups</mat-icon></div>
+      <div class="kpi-body">
+        <div class="kpi-title">Total estudiantes</div>
+        <div class="kpi-value">{{ totalEstudiantes() }}</div>
+        <div class="kpi-sub">Suma por unidades</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="kpi-icon"><mat-icon>warning</mat-icon></div>
+      <div class="kpi-body">
+        <div class="kpi-title">Unidades en rojo</div>
+        <div class="kpi-value">{{ unidadesEnRojo() }}</div>
+        <div class="kpi-sub">&lt; {{ UMBRAL_ROJO }}% asistencia</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="kpi">
+      <div class="kpi-icon"><mat-icon>check_circle</mat-icon></div>
+      <div class="kpi-body">
+        <div class="kpi-title">Unidades con datos</div>
+        <div class="kpi-value">{{ unidadesConDatos() }}</div>
+        <div class="kpi-sub">total_clases &gt; 0</div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Charts -->
+  <div class="grid">
+    <mat-card class="panel panel-big">
+      <div class="panel-title">
+        <span>Top 10 unidades por % asistencia</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas #barCanvas></canvas>
+
+        @if (!loading() && rows().length === 0) {
+          <div class="chart-empty">Sin datos para el semestre/filtro.</div>
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="panel panel-side">
+      <div class="panel-title">
+        <span>Distribución por riesgo</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas #donutCanvas></canvas>
+
+        @if (!loading() && rows().length === 0) {
+          <div class="chart-empty">Sin datos para el semestre/filtro.</div>
+        } @else if (!loading() && rows().length > 0 && unidadesConDatos() === 0) {
+          <div class="chart-empty">Todas las unidades están sin clases registradas.</div>
+        }
+      </div>
+
+      <div class="legend-note">
+        Verde ≥ {{ UMBRAL_VERDE }}% · Amarillo {{ UMBRAL_ROJO }}–{{ UMBRAL_VERDE - 0.01 }}% · Rojo &lt; {{ UMBRAL_ROJO }}%
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Table -->
+  <mat-card class="panel table-panel">
+    <div class="panel-title">
+      <span>Unidades</span>
+    </div>
+
+    <div class="table-wrap">
+      <table mat-table [dataSource]="dataSource" matSort>
+
+        <ng-container matColumnDef="des_unidad">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Unidad</th>
+          <td mat-cell *matCellDef="let row">{{ row.des_unidad }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="porcentaje_asistencia">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>% Asistencia</th>
+          <td mat-cell *matCellDef="let row">
+            <span [class]="badgeClass(row.porcentaje_asistencia)">
+              {{ row.porcentaje_asistencia ?? '—' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_estudiantes">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estudiantes</th>
+          <td mat-cell *matCellDef="let row">{{ row.total_estudiantes }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_clases">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Clases</th>
+          <td mat-cell *matCellDef="let row">{{ row.total_clases }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="total_asistencias">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Asistencias</th>
+          <td mat-cell *matCellDef="let row">{{ row.total_asistencias }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-stroked-button color="primary" (click)="verDetalle(row)">
+              Ver detalle
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    </div>
+  </mat-card>
+</div>
