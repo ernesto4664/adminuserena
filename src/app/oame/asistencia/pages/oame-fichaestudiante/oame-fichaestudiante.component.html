@@ -8,19 +8,21 @@
       Volver
     </button>
 
+    <div class="actions">
+      <button mat-stroked-button (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <div class="información">
     <div class="title">
       <h1>Ficha estudiante</h1>
       <div class="sub">
         Semestre: <strong>{{ semestreCtrl.value }}</strong>
         · ID: <strong>{{ personal()?.id_usuario ?? idUsuario() ?? '—' }}</strong>
       </div>
-    </div>
-
-    <div class="actions">
-      <button mat-stroked-button (click)="cargar()">
-        <mat-icon>refresh</mat-icon>
-        Actualizar
-      </button>
     </div>
   </div>
 
@@ -40,14 +42,17 @@
          INFO BANNER (diseño)
     ========================== -->
     <mat-card class="info-banner">
-      <mat-icon>info</mat-icon>
-      <div>
-        Aquí podrás visualizar detalladamente la información correspondiente a cada estudiante previamente seleccionado.
-      </div>
+    <div class="info-banner__inner">
+        <mat-icon class="info-banner__icon">info_outline</mat-icon>
 
-      <button mat-icon-button aria-label="cerrar">
+        <div class="info-banner__text">
+        Aquí podrás visualizar detalladamente la información correspondiente a cada estudiante previamente seleccionado.
+        </div>
+
+        <button mat-icon-button class="info-banner__close" aria-label="cerrar">
         <mat-icon>close</mat-icon>
-      </button>
+        </button>
+    </div>
     </mat-card>
 
     <!-- =========================

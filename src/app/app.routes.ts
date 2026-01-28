@@ -14,31 +14,48 @@ export const routes: Routes = [
     component: AppShellComponent,
     children: [
       // ✅ HOME real (Inicio)
-      { path: '', component: HomeDashboardComponent },
+      { path: '', component: HomeDashboardComponent, data: { title: 'Inicio' } },
 
       // Alias explícito
-      { path: 'inicio', component: HomeDashboardComponent },
+      { path: 'inicio', component: HomeDashboardComponent, data: { title: 'Inicio' } },
 
       // =========================
       // ✅ OAME
       // =========================
       { path: 'oame', redirectTo: 'oame/dashboard', pathMatch: 'full' },
 
-      { path: 'oame/dashboard', component: OameAsistenciaDashboardComponent },
+      {
+        path: 'oame/dashboard',
+        component: OameAsistenciaDashboardComponent,
+        data: { title: 'OAME · Monitoreo y Seguimiento' },
+      },
 
       // 🔹 Detalle Unidad
       {
         path: 'oame/asistencia/unidades/:id',
         component: OameAsistenciaUnidadDetalleComponent,
+        data: { title: 'Detalle de Unidad' },
       },
 
       // 🔹 Detalle Programa
-      { path: 'oame/asistencia/programas/:id', component: OameAsistenciaProgramaDetalleComponent },
+      {
+        path: 'oame/asistencia/programas/:id',
+        component: OameAsistenciaProgramaDetalleComponent,
+        data: { title: 'Detalle de Programa' },
+      },
 
       // 🔹 Detalle - ficha estudiante OAME
-      { path: 'oame/asistencia/ficha-estudiante/:id_usuario', component: OameFichaEstudianteComponent },
+      {
+        path: 'oame/asistencia/ficha-estudiante/:id_usuario',
+        component: OameFichaEstudianteComponent,
+        data: { title: 'Ficha estudiante' },
+      },
 
-      { path: 'oame/asistencia', redirectTo: 'oame/dashboard', pathMatch: 'full' },
+      {
+        path: 'oame/asistencia',
+        redirectTo: 'oame/dashboard',
+        pathMatch: 'full',
+      },
     ],
   },
 

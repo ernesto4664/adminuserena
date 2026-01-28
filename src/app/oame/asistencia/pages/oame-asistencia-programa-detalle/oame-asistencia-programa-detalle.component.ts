@@ -20,6 +20,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 import { OameAsistenciaService } from '../../services/oame-asistencia.service';
 import { ProgramaDetallePayload } from '../../models/asistencia.models';
+import { A11yModule } from "@angular/cdk/a11y";
 
 @Component({
   selector: 'app-oame-asistencia-programa-detalle',
@@ -34,7 +35,8 @@ import { ProgramaDetallePayload } from '../../models/asistencia.models';
     MatProgressBarModule,
     MatTableModule,
     MatPaginatorModule,
-  ],
+    A11yModule
+],
   templateUrl: './oame-asistencia-programa-detalle.component.html',
   styleUrl: './oame-asistencia-programa-detalle.component.scss',
 })
@@ -55,14 +57,17 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
 
   // ✅ paginación (UI 0-based / API 1-based)
   pageIndex = signal(0);
+
+  // ✅ FIJO: 50 por página
   pageSize = signal(50);
-  total = signal(0);     // total estudiantes (para paginator)
-  lastPage = signal(1);  // opcional
+
+  total = signal(0);     // total estudiantes (para UI)
+  lastPage = signal(1);  // total páginas server-side
 
   loading = signal(false);
   error = signal<string | null>(null);
 
-  // ⬇️ OJO: aquí guardamos el response completo para leer meta.pagination
+  // ⬇️ response completo para leer meta.pagination
   response = signal<any | null>(null);
   payload = computed<ProgramaDetallePayload | null>(() => this.response()?.data ?? null);
 
@@ -70,8 +75,20 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
   totales = computed(() => this.payload()?.totales ?? null);
   estudiantes = computed<any[]>(() => this.payload()?.estudiantes ?? []);
 
-  UMBRAL_ROJO = 80;
-  UMBRAL_VERDE = 90;
+  // ✅ PÁGINAS consecutivas 1..N (server-side)
+  pages = computed<number[]>(() => {
+    const last = this.lastPage();
+    return Array.from({ length: Math.max(1, last) }, (_, i) => i + 1);
+  });
+
+  // =========================
+  // ✅ UMBRALES OFICIALES
+  //   Rojo: 0-50
+  //   Amarillo: 51-80
+  //   Verde: 81-100
+  // =========================
+  readonly MAX_ROJO = 50;
+  readonly MAX_AMARILLO = 80;
 
   displayedColumns = ['nombre', 'porcentaje', 'clases', 'asistencias'];
 
@@ -121,8 +138,11 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
     const semestre = this.semestreCtrl.value;
     const idUnidad = this.idUnidad() ?? undefined;
 
+    // ✅ FIJO 50 por página (aunque alguien lo cambie por error)
+    const perPage = 50;
+    if (this.pageSize() !== 50) this.pageSize.set(50);
+
     const page = this.pageIndex() + 1; // API 1-based
-    const perPage = this.pageSize();
 
     this.loading.set(true);
     this.error.set(null);
@@ -145,6 +165,13 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
             this.lastPage.set(1);
           }
 
+          // ✅ si quedaste fuera de rango (por cambios de filtros), te baja
+          const last = this.lastPage();
+          const current = this.pageIndex() + 1;
+          if (current > last) {
+            this.pageIndex.set(Math.max(0, last - 1));
+          }
+
           this.loading.set(false);
         },
         error: (err) => {
@@ -161,9 +188,43 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
       });
   }
 
+  // ✅ Compat (ya no hay mat-paginator, pero no lo elimino por si lo llamaban)
   onPageChange(ev: PageEvent): void {
     this.pageIndex.set(ev.pageIndex);
-    this.pageSize.set(ev.pageSize);
+
+    // 🔒 fuerza 50 siempre
+    if (ev.pageSize !== 50) {
+      this.pageSize.set(50);
+    } else {
+      this.pageSize.set(ev.pageSize);
+    }
+
+    this.cargar();
+  }
+
+  // ==========================================================
+  // ✅ NUEVO: paginación numérica consecutiva (server-side)
+  // ==========================================================
+  goToPage(page: number): void {
+    const last = this.lastPage();
+    if (!page || page < 1 || page > last) return;
+
+    const idx = page - 1; // UI 0-based
+    if (idx === this.pageIndex()) return;
+
+    this.pageIndex.set(idx);
+    this.cargar();
+  }
+
+  prevPage(): void {
+    if (this.pageIndex() <= 0) return;
+    this.pageIndex.set(this.pageIndex() - 1);
+    this.cargar();
+  }
+
+  nextPage(): void {
+    if (this.pageIndex() + 1 >= this.lastPage()) return;
+    this.pageIndex.set(this.pageIndex() + 1);
     this.cargar();
   }
 
@@ -181,28 +242,23 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
 
   // ✅ nombre + rut (compat con distintos payloads)
   nombrePersona(row: any): string {
-    // viejo (si existiera)
     const n1 = String(row?.nombre_alumno ?? '').trim();
     if (n1) return n1;
 
-    // maestro real (capturas)
     const nombres = String(row?.nombres_usuario ?? '').trim();
     const paterno = String(row?.paterno_usuario ?? '').trim();
     const materno = String(row?.materno_usuario ?? '').trim();
     const full = [nombres, paterno, materno].filter(Boolean).join(' ').trim();
     if (full) return full;
 
-    // fallback
     const id = row?.id_usuario ?? '';
     return id ? `Usuario ${id}` : 'Usuario';
   }
 
   rutPersona(row: any): string | null {
-    // viejo (si existiera)
     const rut = String(row?.rut ?? '').trim();
     if (rut) return rut;
 
-    // maestro real: id_usuario + digito_rut_usuario
     const id = row?.id_usuario;
     const dv = String(row?.digito_rut_usuario ?? '').trim();
     if (id && dv) return `${id}-${dv}`;
@@ -210,18 +266,27 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
     return null;
   }
 
-  badgeClass(p: string | number | null): string {
+  // ✅ ESTE ES EL MÉTODO QUE PINTA LOS BADGES (umbrales oficiales)
+  badgeClass(p: string | number | null | undefined): string {
     const n = this.toNum(p);
     if (n === null) return 'badge badge-muted';
-    if (n < this.UMBRAL_ROJO) return 'badge badge-red';
-    if (n < this.UMBRAL_VERDE) return 'badge badge-amber';
+
+    if (n <= this.MAX_ROJO) return 'badge badge-red';
+    if (n <= this.MAX_AMARILLO) return 'badge badge-amber';
     return 'badge badge-green';
   }
 
-  private toNum(p: string | number | null): number | null {
+  private toNum(p: string | number | null | undefined): number | null {
     if (p === null || p === undefined || p === '') return null;
-    const n = Number(String(p).replace(',', '.'));
-    return Number.isFinite(n) ? n : null;
+
+    const raw = typeof p === 'number' ? String(p) : String(p);
+    const cleaned = raw.replace(',', '.'); // "87,7" -> "87.7"
+    const n = Number(cleaned);
+
+    if (!Number.isFinite(n)) return null;
+
+    // clamp defensivo 0..100
+    return Math.max(0, Math.min(100, n));
   }
 
   verFicha(row: any): void {
@@ -237,5 +302,4 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
       queryParamsHandling: 'merge',
     });
   }
-
 }

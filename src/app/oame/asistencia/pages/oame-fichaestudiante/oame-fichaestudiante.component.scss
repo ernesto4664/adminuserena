@@ -4,9 +4,16 @@
 
 .page-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+
+  button.back.mdc-button.mat-mdc-button.mat-unthemed.mat-mdc-button-base {
+        border: 1px solid;
+        padding: 10px 30px;
+  
+  }
 
   .title {
     flex: 1;
@@ -39,20 +46,46 @@
 }
 
 .info-banner {
+  padding: 16px;
+  margin: 12px 0;
+
+  border: 2px solid #003082;
+  border-radius: 5px;
+
+  // Figma: 0px 1.89px 3.77px 1.41px #00000026;
+  //       0px 0.47px 1.41px 0px #0000004D;
+  box-shadow:
+    0px 1.89px 3.77px 1.41px #00000026,
+    0px 0.47px 1.41px 0px #0000004D;
+
+  background: #fff;
+}
+
+.info-banner__inner {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px;
-  margin: 12px 0;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 44px; // ayuda a que no crezca de más
+}
 
-  mat-icon {
-    opacity: 0.8;
-  }
+.info-banner__icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  color: #003082;
+  flex: 0 0 auto;
+}
 
-  button {
-    margin-left: auto;
-  }
+.info-banner__text {
+  flex: 1 1 auto;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.info-banner__close {
+  flex: 0 0 auto;
 }
 
 .tabs-card {

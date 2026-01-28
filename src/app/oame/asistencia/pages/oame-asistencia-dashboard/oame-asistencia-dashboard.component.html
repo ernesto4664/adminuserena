@@ -63,7 +63,7 @@
       <div class="kpi-body">
         <div class="kpi-title">Unidades en rojo</div>
         <div class="kpi-value">{{ unidadesEnRojo() }}</div>
-        <div class="kpi-sub">&lt; {{ UMBRAL_ROJO }}% asistencia</div>
+        <div class="kpi-sub">0–{{ MAX_ROJO }}% asistencia</div>
       </div>
     </mat-card>
 
@@ -109,7 +109,7 @@
       </div>
 
       <div class="legend-note">
-        Verde ≥ {{ UMBRAL_VERDE }}% · Amarillo {{ UMBRAL_ROJO }}–{{ UMBRAL_VERDE - 0.01 }}% · Rojo &lt; {{ UMBRAL_ROJO }}%
+        Rojo 0–{{ MAX_ROJO }}% · Amarillo {{ MAX_ROJO + 1 }}–{{ MAX_AMARILLO }}% · Verde {{ MAX_AMARILLO + 1 }}–100%
       </div>
     </mat-card>
   </div>
@@ -165,7 +165,47 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
 
-      <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+      <!-- ✅ Mantener paginator para MatTableDataSource pero oculto visualmente -->
+      <mat-paginator
+        class="mat-paginator-hidden"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[10, 25, 50]"
+      ></mat-paginator>
+
+      <!-- ✅ PAGINACIÓN NUMÉRICA CONSECUTIVA (la que te piden) -->
+      @if (totalPages() > 1) {
+        <div class="custom-pagination">
+          <button
+            type="button"
+            class="arrow"
+            [disabled]="currentPage() === 1"
+            (click)="prevPage()"
+            aria-label="Página anterior"
+          >
+            ‹
+          </button>
+
+          <button
+            type="button"
+            class="page"
+            *ngFor="let p of pages()"
+            [class.active]="p === currentPage()"
+            (click)="goToPage(p)"
+          >
+            {{ p }}
+          </button>
+
+          <button
+            type="button"
+            class="arrow"
+            [disabled]="currentPage() === totalPages()"
+            (click)="nextPage()"
+            aria-label="Página siguiente"
+          >
+            ›
+          </button>
+        </div>
+      }
     </div>
   </mat-card>
 </div>

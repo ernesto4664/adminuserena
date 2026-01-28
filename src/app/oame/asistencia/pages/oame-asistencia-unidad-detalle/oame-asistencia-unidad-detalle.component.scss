@@ -1,4 +1,3 @@
-/* oame-asistencia-unidad-detalle.component.scss */
 :host {
   display: block;
 }
@@ -45,16 +44,16 @@
 }
 
 .back {
-    border: 1px solid #5e35b1;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #5e35b1;
-    font-weight: 500;
-    text-decoration: none;
-    width: fit-content;
-    padding: 5px 15px;
-    border-radius: 20px;
+  border: 1px solid #005cbb;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #005cbb;
+  font-weight: 500;
+  text-decoration: none;
+  width: fit-content;
+  padding: 5px 15px;
+  border-radius: 20px;
 
   &:hover {
     text-decoration: underline;
@@ -184,15 +183,6 @@ tr.mat-mdc-row:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 
-.prog-name {
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.prog-sub {
-  margin-top: 2px;
-}
-
 /* Empty state */
 .empty {
   padding: 18px 16px;
@@ -200,7 +190,7 @@ tr.mat-mdc-row:hover {
   font-size: 14px;
 }
 
-/* ===== Badges (similar al dashboard) ===== */
+/* ===== Badges ===== */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -245,8 +235,8 @@ button {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(94, 53, 177, 0.55);
-  color: #5e35b1;
+  border: 1px solid #005cbb;
+  color: #005cbb;
   font-weight: 600;
   cursor: pointer;
   width: fit-content;
@@ -255,7 +245,6 @@ button {
   &:hover {
     background: rgba(94, 53, 177, 0.06);
   }
-
 }
 
 /* Responsive: reduce big title on small screens */
@@ -271,4 +260,52 @@ button {
   .actions {
     padding-top: 0;
   }
+}
+
+/* =========================================================
+   ✅ NUEVO: ocultar MatPaginator visual (sin romper lógica)
+   ========================================================= */
+.mat-paginator-hidden {
+  display: none !important;
+}
+
+/* =========================================================
+   ✅ NUEVO: paginación numérica consecutiva
+   ========================================================= */
+.custom-pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0 6px;
+}
+
+.custom-pagination .arrow {
+  border: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.custom-pagination .arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.custom-pagination .page {
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.custom-pagination .page.active {
+  background: #0b3a8a;
+  color: #fff;
+  text-decoration: none;
 }

@@ -5,13 +5,6 @@
         <mat-icon>arrow_back</mat-icon>
         Volver
       </a>
-
-      <h1>Detalle de Programa</h1>
-
-      <p class="sub">
-        Semestre: {{ semestreCtrl.value }} · Programa ID: {{ idPrograma() ?? '—' }}
-        @if (idUnidad()) { · Unidad ID: {{ idUnidad() }} }
-      </p>
     </div>
 
     <div class="actions">
@@ -20,6 +13,15 @@
         Actualizar
       </button>
     </div>
+  </div>
+
+  <div class="información">
+      <h1>Detalle de Programa</h1>
+
+      <p class="sub">
+        Semestre: {{ semestreCtrl.value }} · Programa ID: {{ idPrograma() ?? '—' }}
+        @if (idUnidad()) { · Unidad ID: {{ idUnidad() }} }
+      </p>
   </div>
 
   @if (loading()) {
@@ -75,7 +77,6 @@
       <div class="panel-title">
         <span>Estudiantes</span>
 
-        <!-- ✅ ahora es paginado, no “Top 50” -->
         <span class="muted">
           Mostrando {{ estudiantes().length }} de {{ total() }} registros
         </span>
@@ -84,24 +85,24 @@
       <div class="table-wrap">
         <table mat-table [dataSource]="estudiantes()">
 
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef>Estudiante</th>
-          <td mat-cell *matCellDef="let row">
-            <button
-              mat-button
-              color="primary"
-              class="student-btn"
-              (click)="verFicha(row)">
-              <div class="cell-title">
-                {{ nombrePersona(row) }}
-              </div>
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+            <td mat-cell *matCellDef="let row">
+              <button
+                mat-button
+                color="primary"
+                class="student-btn"
+                (click)="verFicha(row)">
+                <div class="cell-title">
+                  {{ nombrePersona(row) }}
+                </div>
 
-              <div class="muted" *ngIf="rutPersona(row) as r">
-                RUT: {{ r }}
-              </div>
-            </button>
-          </td>
-        </ng-container>
+                <div class="muted" *ngIf="rutPersona(row) as r">
+                  RUT: {{ r }}
+                </div>
+              </button>
+            </td>
+          </ng-container>
 
           <ng-container matColumnDef="porcentaje">
             <th mat-header-cell *matHeaderCellDef>% Asistencia</th>
@@ -131,14 +132,37 @@
         </table>
       </div>
 
-      <!-- ✅ paginator -->
-      <mat-paginator
-        [length]="total()"
-        [pageIndex]="pageIndex()"
-        [pageSize]="pageSize()"
-        [pageSizeOptions]="[25, 50, 100, 200]"
-        (page)="onPageChange($event)">
-      </mat-paginator>
+      <!-- ✅ PAGINACIÓN CUSTOM (SERVER-SIDE) · 50 por página fijo -->
+      @if (lastPage() > 1) {
+        <div class="custom-pagination">
+          <button
+            type="button"
+            class="arrow"
+            [disabled]="pageIndex() === 0"
+            (click)="prevPage()"
+            aria-label="Página anterior">
+            ‹
+          </button>
+
+          <button
+            type="button"
+            class="page"
+            *ngFor="let p of pages()"
+            [class.active]="p === pageIndex() + 1"
+            (click)="goToPage(p)">
+            {{ p }}
+          </button>
+
+          <button
+            type="button"
+            class="arrow"
+            [disabled]="pageIndex() + 1 === lastPage()"
+            (click)="nextPage()"
+            aria-label="Página siguiente">
+            ›
+          </button>
+        </div>
+      }
     </mat-card>
   }
 </div>

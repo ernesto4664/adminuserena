@@ -20,13 +20,13 @@
 
         <!-- INICIO (placeholder - no navega a nada por ahora) -->
         <a
-        mat-list-item
-        routerLink="/inicio"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
+          mat-list-item
+          routerLink="/inicio"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
         >
-        <mat-icon matListItemIcon>home</mat-icon>
-        <span matListItemTitle *ngIf="!collapsed()">Inicio</span>
+          <mat-icon matListItemIcon>home</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed()">Inicio</span>
         </a>
 
         <!-- ✅ OAME = dashboard -->
@@ -71,11 +71,12 @@
     <!-- HEADER -->
     <mat-toolbar class="topbar" color="primary">
       <button mat-icon-button (click)="toggleSidebar()">
-       <!-- <mat-icon>menu</mat-icon>-->
+        <!-- <mat-icon>menu</mat-icon>-->
       </button>
 
       <div class="crumb">
-        <span class="crumb-title">Dashboard</span>
+        <!-- ✅ dinámico -->
+        <span class="crumb-title">{{ crumbTitle() }}</span>
       </div>
 
       <span class="spacer"></span>
@@ -106,8 +107,10 @@
     </mat-toolbar>
 
     <!-- BODY -->
-    <div class="router-wrap">
-      <router-outlet></router-outlet>
+    <div class="oame-gob">
+      <div class="router-wrap">
+        <router-outlet></router-outlet>
+      </div>
     </div>
 
     <!-- FOOTER -->

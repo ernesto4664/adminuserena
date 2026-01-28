@@ -1,6 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet, RouterModule } from '@angular/router';
+
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -31,10 +34,46 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './app-shell.component.scss',
 })
 export class AppShellComponent {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+
   collapsed = signal(false);
   readonly currentYear = new Date().getFullYear();
 
+  // ✅ Título dinámico del header
+  crumbTitle = signal<string>('Inicio');
+
+  constructor() {
+    // ✅ set inicial (por si entran directo a /oame/dashboard, etc)
+    queueMicrotask(() => {
+      this.crumbTitle.set(this.getDeepestRouteTitle() ?? 'Inicio');
+    });
+
+    // ✅ actualizar cuando cambia la ruta
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.crumbTitle.set(this.getDeepestRouteTitle() ?? 'Inicio');
+      });
+  }
+
   toggleSidebar() {
     this.collapsed.update((v) => !v);
+  }
+
+  // =========================
+  // Helpers
+  // =========================
+  private getDeepestRouteTitle(): string | null {
+    // buscamos la ruta más profunda desde el root ActivatedRoute
+    let ar: ActivatedRoute | null = this.route;
+    while (ar?.firstChild) ar = ar.firstChild;
+
+    const title = ar?.snapshot?.data?.['title'];
+    return typeof title === 'string' && title.trim() ? title : null;
   }
 }

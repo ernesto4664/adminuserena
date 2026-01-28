@@ -2,6 +2,20 @@
   height: 100vh;
 }
 
+.oame-gob {
+  font-family: var(--font-gob);
+}
+
+.oame-gob table,
+.oame-gob .mat-table,
+.oame-gob .numeric {
+  font-family: var(--font-body);
+}
+
+.mat-badge {
+    --mat-badge-background-color: #E4332C;
+}
+
 .sidenav {
   width: 260px;
   background: #0F172B;
@@ -120,7 +134,13 @@
   border-bottom: 1px solid lightgray;
 }
 
-.crumb-title { font-weight: 800; }
+/* ✅ título dinámico del header */
+.crumb-title {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
 .spacer { flex: 1; }
 
 .user {
