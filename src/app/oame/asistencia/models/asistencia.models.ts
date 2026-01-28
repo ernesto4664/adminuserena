@@ -40,3 +40,27 @@ export interface UnidadDetallePayload {
   };
   programas: ProgramaAsistenciaRow[];
 }
+
+export interface ProgramaDetallePayload {
+  programa: {
+    id_programa: number;
+    nombre_programa: string;
+    id_unidad: number;
+    des_unidad: string;
+  };
+  totales: {
+    total_estudiantes: number;
+    estudiantes_con_asistencia: number;
+    total_clases: number;
+    total_asistencias: number;
+    porcentaje_asistencia: string | null;
+  };
+  estudiantes: Array<{
+    id_usuario: number;
+    nombre_alumno?: string;
+    rut?: string;
+    total_clases: number;
+    total_asistencias: number;
+    porcentaje_asistencia: string | null;
+  }>;
+}

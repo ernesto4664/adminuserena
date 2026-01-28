@@ -261,7 +261,7 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     });
   }
 
-  verDetalle(row: UnidadAsistenciaRow): void {
+  irADetalleUnidad(row: UnidadAsistenciaRow) {
     this.router.navigate(['/oame/asistencia/unidades', row.id_unidad], {
       queryParams: { semestre: this.semestreCtrl.value },
     });

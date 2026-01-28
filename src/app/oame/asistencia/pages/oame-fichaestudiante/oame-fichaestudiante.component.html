@@ -1,0 +1,333 @@
+<div class="page">
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <div class="page-header">
+    <button mat-button class="back" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+
+    <div class="title">
+      <h1>Ficha estudiante</h1>
+      <div class="sub">
+        Semestre: <strong>{{ semestreCtrl.value }}</strong>
+        · ID: <strong>{{ personal()?.id_usuario ?? idUsuario() ?? '—' }}</strong>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (error()) {
+    <mat-card class="error">
+      <mat-icon color="warn">error</mat-icon>
+      <div>{{ error() }}</div>
+    </mat-card>
+  }
+
+  @if (data()) {
+    <!-- =========================
+         INFO BANNER (diseño)
+    ========================== -->
+    <mat-card class="info-banner">
+      <mat-icon>info</mat-icon>
+      <div>
+        Aquí podrás visualizar detalladamente la información correspondiente a cada estudiante previamente seleccionado.
+      </div>
+
+      <button mat-icon-button aria-label="cerrar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card>
+
+    <!-- =========================
+         TABS estilo diseño (segmentos)
+    ========================== -->
+    <mat-card class="tabs-card">
+      <div class="tabs-seg">
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'personal'"
+          (click)="setTab('personal')">
+          Información personal
+        </button>
+
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'academico'"
+          (click)="setTab('academico')">
+          Información académica
+        </button>
+
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'seguimientos'"
+          (click)="setTab('seguimientos')">
+          Seguimientos y actividades
+        </button>
+      </div>
+
+      <!-- =========================
+           TAB 1: PERSONAL
+      ========================== -->
+      @if (tab() === 'personal') {
+        <div class="tab-content grid-2">
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>person</mat-icon>
+              <span>Datos personales</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Nombre</div>
+              <div class="v">{{ personal()?.nombre_completo ?? '—' }}</div>
+
+              <div class="k">RUT</div>
+              <div class="v">{{ personal()?.rut ?? '—' }}</div>
+
+              <!-- ✅ sin romper types ni parser -->
+              <div class="k">Email</div>
+              <div class="v">{{ personalEmail() ?? '—' }}</div>
+
+              <div class="k">Contacto</div>
+              <div class="v">{{ personalTelefono() ?? '—' }}</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>folder</mat-icon>
+              <span>Documentos / Antecedentes</span>
+            </div>
+
+            @if (documentos().length) {
+              <div class="docs">
+                @for (d of documentos(); track $index) {
+                  <div class="doc-item">
+                    <mat-icon>attach_file</mat-icon>
+                    <div class="doc-name">{{ docLabel(d) }}</div>
+                    <div class="doc-tag">Adjuntado</div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="muted">Sin documentos</div>
+            }
+          </mat-card>
+        </div>
+      }
+
+      <!-- =========================
+           TAB 2: ACADÉMICO
+      ========================== -->
+      @if (tab() === 'academico') {
+        <div class="tab-content grid-2">
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>school</mat-icon>
+              <span>Información académica</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Unidad / Facultad</div>
+              <div class="v">{{ academico()?.unidad ?? '—' }}</div>
+
+              <div class="k">Carrera / Programa</div>
+              <div class="v">{{ academico()?.programa ?? '—' }}</div>
+
+              <div class="k">Código</div>
+              <div class="v">{{ academico()?.codigo_programa ?? '—' }}</div>
+
+              <div class="k">ID Programa</div>
+              <div class="v">{{ academico()?.id_programa ?? '—' }}</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>folder</mat-icon>
+              <span>Documentos / Antecedentes</span>
+            </div>
+
+            @if (documentos().length) {
+              <div class="docs">
+                @for (d of documentos(); track $index) {
+                  <div class="doc-item">
+                    <mat-icon>attach_file</mat-icon>
+                    <div class="doc-name">{{ docLabel(d) }}</div>
+                    <div class="doc-tag">Adjuntado</div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="muted">Sin documentos</div>
+            }
+          </mat-card>
+
+          <!-- Calificaciones -->
+          <mat-card class="panel full">
+            <div class="panel-title">
+              <mat-icon>fact_check</mat-icon>
+              <span>Calificaciones finales</span>
+            </div>
+
+            @if (calificaciones().length) {
+              <div class="list">
+                @for (c of calificaciones(); track $index) {
+                  <div class="row">
+                    <div class="row-main">
+                      <div class="row-title">{{ c?.nombre_asignatura ?? 'Asignatura' }}</div>
+                      <div class="row-sub muted">
+                        {{ c?.codigo_asignatura ?? '—' }}
+                        · SemMat: {{ c?.semestre_matricula ?? '—' }}
+                      </div>
+                    </div>
+
+                    <div class="row-right">
+                      <span class="grade">{{ c?.nota_final ?? '—' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="soft-divider"></div>
+                }
+              </div>
+            } @else {
+              <div class="muted">Sin calificaciones para el semestre</div>
+            }
+          </mat-card>
+
+          <!-- Parciales -->
+          <mat-card class="panel full">
+            <div class="panel-title">
+              <mat-icon>timeline</mat-icon>
+              <span>Notas parciales</span>
+            </div>
+
+            @if (parciales().length) {
+              <div class="list">
+                @for (p of parciales(); track $index) {
+                  <div class="row">
+                    <div class="row-main">
+                      <div class="row-title">{{ p?.nombre_asignatura ?? 'Asignatura' }}</div>
+                      <div class="row-sub muted">
+                        Tipo: {{ p?.tipo_nota ?? '—' }}
+                        · Oferta: {{ p?.id_semestre_oferta ?? '—' }}
+                      </div>
+                    </div>
+
+                    <div class="row-right">
+                      <span class="grade">{{ p?.nota ?? '—' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="soft-divider"></div>
+                }
+              </div>
+            } @else {
+              <div class="muted">Sin parciales (o no disponibles)</div>
+            }
+          </mat-card>
+        </div>
+      }
+
+      <!-- =========================
+           TAB 3: SEGUIMIENTOS
+      ========================== -->
+      @if (tab() === 'seguimientos') {
+        <div class="tab-content">
+          <div class="progress-wrap">
+            <div class="progress-title">Progreso del estudiante</div>
+
+            @if (progreso()?.texto) {
+              <div class="muted">
+                Indicadores: {{ progreso()?.texto }}
+              </div>
+            }
+
+            <!-- ✅ BARRA DINÁMICA: solo si hay info real -->
+            @if (hasProgreso()) {
+              <div class="segments">
+                @for (i of progresoSteps(); track i) {
+                  <div class="seg" [class.active]="i < (progreso()?.semestre_actual ?? 0)"></div>
+                }
+              </div>
+
+              <div class="muted">
+                Avance: {{ progresoPercent() ?? '—' }}%
+                · {{ progreso()?.semestre_actual }}/{{ progreso()?.total_semestres }} semestres
+              </div>
+            } @else {
+              <div class="muted">
+                Sin información suficiente para calcular el progreso (pendiente cuando esté full en BD).
+              </div>
+            }
+          </div>
+
+          <div class="grid-2">
+            <mat-card class="panel">
+              <div class="panel-title">
+                <mat-icon>assignment</mat-icon>
+                <span>Seguimientos / Actividades</span>
+              </div>
+
+              @if (seguimientos().length) {
+                <div class="muted">Implementar render según estructura real</div>
+              } @else {
+                <div class="muted">Sin seguimientos</div>
+              }
+            </mat-card>
+
+            <div class="right-stack">
+              <mat-card class="panel">
+                <div class="panel-title">
+                  <mat-icon>warning</mat-icon>
+                  <span>Indicadores</span>
+                </div>
+
+                @if (indicadores().length) {
+                  <div class="muted">Implementar render según estructura real</div>
+                } @else {
+                  <div class="muted">Sin indicadores</div>
+                }
+              </mat-card>
+
+              <mat-card class="panel">
+                <div class="panel-title">
+                  <mat-icon>folder</mat-icon>
+                  <span>Documentos / Antecedentes</span>
+                </div>
+
+                @if (documentos().length) {
+                  <div class="docs">
+                    @for (d of documentos(); track $index) {
+                      <div class="doc-item">
+                        <mat-icon>attach_file</mat-icon>
+                        <div class="doc-name">{{ docLabel(d) }}</div>
+                        <div class="doc-tag">Adjuntado</div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="muted">Sin documentos</div>
+                }
+              </mat-card>
+            </div>
+          </div>
+        </div>
+      }
+    </mat-card>
+  }
+</div>

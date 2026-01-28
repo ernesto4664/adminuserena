@@ -1,0 +1,274 @@
+/* oame-asistencia-unidad-detalle.component.scss */
+:host {
+  display: block;
+}
+
+/* ===== Page layout ===== */
+.page {
+  padding: 24px;
+  max-width: 1180px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  h1 {
+    margin: 0;
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+  }
+
+  .sub {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.back {
+    border: 1px solid #5e35b1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #5e35b1;
+    font-weight: 500;
+    text-decoration: none;
+    width: fit-content;
+    padding: 5px 15px;
+    border-radius: 20px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ===== Error card ===== */
+mat-card.error {
+  margin-top: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-radius: 16px;
+  background: rgba(244, 67, 54, 0.06);
+
+  mat-icon {
+    margin-top: 2px;
+  }
+
+  div {
+    color: rgba(0, 0, 0, 0.78);
+    font-size: 14px;
+  }
+}
+
+/* ===== Panel cards ===== */
+.panel {
+  margin-top: 16px;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.panel-title {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  span:first-child {
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+/* ===== KPI grid ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 16px;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 16px;
+  padding: 14px 14px 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  .kpi-title {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.55);
+  }
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== Table ===== */
+.table-panel {
+  padding-bottom: 8px;
+}
+
+.table-wrap {
+  padding: 8px 16px 16px 16px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th.mat-mdc-header-cell {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.72);
+  background: transparent;
+}
+
+td.mat-mdc-cell,
+th.mat-mdc-header-cell {
+  padding: 12px 10px;
+}
+
+tr.mat-mdc-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+tr.mat-mdc-row:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.prog-name {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.prog-sub {
+  margin-top: 2px;
+}
+
+/* Empty state */
+.empty {
+  padding: 18px 16px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+/* ===== Badges (similar al dashboard) ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  min-width: 64px;
+  border: 1px solid transparent;
+}
+
+.badge-green {
+  background: rgba(76, 175, 80, 0.14);
+  color: rgba(27, 94, 32, 0.9);
+  border-color: rgba(76, 175, 80, 0.18);
+}
+
+.badge-amber {
+  background: rgba(255, 193, 7, 0.18);
+  color: rgba(120, 83, 0, 0.95);
+  border-color: rgba(255, 193, 7, 0.22);
+}
+
+.badge-red {
+  background: rgba(244, 67, 54, 0.12);
+  color: rgba(183, 28, 28, 0.95);
+  border-color: rgba(244, 67, 54, 0.18);
+}
+
+.badge-muted {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.55);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Material button small polish ===== */
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(94, 53, 177, 0.55);
+  color: #5e35b1;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(94, 53, 177, 0.06);
+  }
+
+}
+
+/* Responsive: reduce big title on small screens */
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .title h1 {
+    font-size: 34px;
+  }
+
+  .actions {
+    padding-top: 0;
+  }
+}

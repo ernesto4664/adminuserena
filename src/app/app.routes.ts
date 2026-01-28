@@ -5,6 +5,8 @@ import { HomeDashboardComponent } from './oame/asistencia/pages/home-dashboard/h
 
 import { OameAsistenciaDashboardComponent } from './oame/asistencia/pages/oame-asistencia-dashboard/oame-asistencia-dashboard.component';
 import { OameAsistenciaUnidadDetalleComponent } from './oame/asistencia/pages/oame-asistencia-unidad-detalle/oame-asistencia-unidad-detalle.component';
+import { OameAsistenciaProgramaDetalleComponent } from './oame/asistencia/pages/oame-asistencia-programa-detalle/oame-asistencia-programa-detalle.component';
+import { OameFichaEstudianteComponent } from './oame/asistencia/pages/oame-fichaestudiante/oame-fichaestudiante.component';
 
 export const routes: Routes = [
   {
@@ -17,10 +19,25 @@ export const routes: Routes = [
       // Alias explícito
       { path: 'inicio', component: HomeDashboardComponent },
 
+      // =========================
       // ✅ OAME
+      // =========================
       { path: 'oame', redirectTo: 'oame/dashboard', pathMatch: 'full' },
+
       { path: 'oame/dashboard', component: OameAsistenciaDashboardComponent },
-      { path: 'oame/asistencia/unidades/:id', component: OameAsistenciaUnidadDetalleComponent },
+
+      // 🔹 Detalle Unidad
+      {
+        path: 'oame/asistencia/unidades/:id',
+        component: OameAsistenciaUnidadDetalleComponent,
+      },
+
+      // 🔹 Detalle Programa
+      { path: 'oame/asistencia/programas/:id', component: OameAsistenciaProgramaDetalleComponent },
+
+      // 🔹 Detalle - ficha estudiante OAME
+      { path: 'oame/asistencia/ficha-estudiante/:id_usuario', component: OameFichaEstudianteComponent },
+
       { path: 'oame/asistencia', redirectTo: 'oame/dashboard', pathMatch: 'full' },
     ],
   },
