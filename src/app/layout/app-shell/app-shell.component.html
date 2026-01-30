@@ -29,16 +29,81 @@
           <span matListItemTitle *ngIf="!collapsed()">Inicio</span>
         </a>
 
-        <!-- ✅ OAME = dashboard -->
+        <!-- ✅ OAME = dashboard (click navega). Flecha solo expande submenú -->
         <a
           mat-list-item
           routerLink="/oame/dashboard"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: false }"
+          class="oame-root"
         >
           <mat-icon matListItemIcon>insights</mat-icon>
           <span matListItemTitle *ngIf="!collapsed()">OAME</span>
+
+          <!-- Flecha (solo UI) -->
+          <span class="spacer"></span>
+
+          <button
+            mat-icon-button
+            class="subtoggle"
+            *ngIf="!collapsed()"
+            (click)="toggleOameSubmenu($event)"
+            [attr.aria-label]="oameOpen() ? 'Cerrar menú OAME' : 'Abrir menú OAME'"
+          >
+            <mat-icon>{{ oameOpen() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
         </a>
+
+        <!-- ✅ Submenú OAME (NO incluye Dashboard porque OAME ya lo abre) -->
+        <div class="submenu" *ngIf="!collapsed() && oameOpen()">
+          <a
+            mat-list-item
+            class="subitem"
+            routerLink="/oame/riesgo"
+            [queryParams]="{ semestre: oameSemestre() }"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>warning_amber</mat-icon>
+            <span matListItemTitle>Riesgo académico</span>
+          </a>
+
+          <a
+            mat-list-item
+            class="subitem"
+            routerLink="/oame/alertas"
+            [queryParams]="{ semestre: oameSemestre() }"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>notifications</mat-icon>
+            <span matListItemTitle>Alertas</span>
+          </a>
+
+          <a
+            mat-list-item
+            class="subitem"
+            routerLink="/oame/acompanamientos"
+            [queryParams]="{ semestre: oameSemestre() }"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>handshake</mat-icon>
+            <span matListItemTitle>Acompañamientos</span>
+          </a>
+
+          <a
+            mat-list-item
+            class="subitem"
+            [routerLink]="['/oame/estudiantes']"
+            [queryParams]="{ semestre: oameSemestre() }"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>search</mat-icon>
+            <span matListItemTitle>Rendimiento y parciales</span>
+          </a>
+        </div>
 
         <!-- placeholders para otros módulos -->
         <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">

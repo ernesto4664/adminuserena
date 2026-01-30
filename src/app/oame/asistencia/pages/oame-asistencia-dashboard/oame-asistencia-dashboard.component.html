@@ -114,6 +114,45 @@
     </mat-card>
   </div>
 
+  <!-- ✅ NUEVO: Módulos / análisis faltantes -->
+  <mat-card class="panel modules-panel">
+    <div class="panel-title">
+      <span>Gestión de riesgos y acompañamientos</span>
+      <span class="modules-sub">Accesos rápidos por semestre {{ semestreCtrl.value }}</span>
+    </div>
+
+    <div class="modules-grid">
+      @for (m of modules(); track m.key) {
+        <div class="module-card" [class.disabled]="m.disabled">
+          <div class="module-head">
+            <div class="module-icon">
+              <mat-icon>{{ m.icon }}</mat-icon>
+            </div>
+            <div class="module-meta">
+              <div class="module-title">{{ m.title }}</div>
+              <div class="module-desc">{{ m.description }}</div>
+            </div>
+          </div>
+
+          <div class="module-actions">
+            <button
+              mat-stroked-button
+              color="primary"
+              [disabled]="m.disabled"
+              (click)="abrirModulo(m)"
+            >
+              {{ m.cta }}
+            </button>
+
+            @if (m.badge) {
+              <span class="module-badge">{{ m.badge }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </mat-card>
+
   <!-- Table -->
   <mat-card class="panel table-panel">
     <div class="panel-title">
@@ -172,7 +211,7 @@
         [pageSizeOptions]="[10, 25, 50]"
       ></mat-paginator>
 
-      <!-- ✅ PAGINACIÓN NUMÉRICA CONSECUTIVA (la que te piden) -->
+      <!-- ✅ PAGINACIÓN NUMÉRICA CONSECUTIVA -->
       @if (totalPages() > 1) {
         <div class="custom-pagination">
           <button

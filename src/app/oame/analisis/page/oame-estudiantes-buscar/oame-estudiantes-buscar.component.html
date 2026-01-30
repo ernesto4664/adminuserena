@@ -1,0 +1,38 @@
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>OAME · Estudiantes</h1>
+      <p class="sub">Buscador rápido → Ficha estudiante · Semestre: {{ semestre() }}</p>
+    </div>
+
+    <button mat-stroked-button (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+  </div>
+
+  <mat-card class="card">
+    <div class="row">
+      <mat-form-field appearance="outline" class="w">
+        <mat-label>id_usuario</mat-label>
+        <input matInput [formControl]="idCtrl" placeholder="Ej: 22092868" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="irAFicha()">
+        <mat-icon>search</mat-icon>
+        Ver ficha
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="err">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <div class="hint">
+      Tip: esta pantalla solo navega a la ficha existente. Luego la podemos evolucionar a buscador por rut/nombre.
+    </div>
+  </mat-card>
+</div>

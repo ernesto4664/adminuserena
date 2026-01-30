@@ -10,10 +10,12 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription } from 'rxjs'; // ✅ NUEVO
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,6 +54,17 @@ Chart.register(
   DoughnutController
 );
 
+type DashboardModuleCard = {
+  key: string;
+  title: string;
+  description: string;
+  icon: string;
+  cta: string;
+  route?: string;
+  disabled?: boolean;
+  badge?: string;
+};
+
 @Component({
   selector: 'app-oame-asistencia-dashboard',
   standalone: true,
@@ -78,6 +91,7 @@ Chart.register(
 export class OameAsistenciaDashboardComponent implements AfterViewInit {
   private api = inject(OameAsistenciaService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
 
   @ViewChild('barCanvas') barCanvas?: ElementRef<HTMLCanvasElement>;
@@ -93,23 +107,21 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
 
   semestreCtrl = new FormControl<number>(20252, { nonNullable: true });
   qCtrl = new FormControl<string>('', { nonNullable: true });
-
+  semestreSig = signal<number>(20252);
   loading = signal(false);
   rows = signal<UnidadAsistenciaRow[]>([]);
   error = signal<string | null>(null);
 
-  // ==========================================================
-  // ✅ NUEVO: paginación numérica consecutiva (UI custom)
-  //   - sin romper MatPaginator real
-  // ==========================================================
-  pageSize = signal(10);        // mismo default que tenías
-  currentPage = signal(1);      // 1-based
-  totalPages = signal(1);       // 1..N
-  pages = signal<number[]>([]); // [1..N]
+  // ✅ paginación numérica consecutiva
+  pageSize = signal(10);
+  currentPage = signal(1);
+  totalPages = signal(1);
+  pages = signal<number[]>([]);
 
-  // ==========================================================
+  // ✅ NUEVO: controla request activo para no pisarte respuestas viejas
+  private loadSub?: Subscription;
+
   // ✅ EXCLUSIÓN: Unidades administrativas
-  // ==========================================================
   private readonly UNIDADES_ADMINISTRATIVAS = new Set<string>([
     'ADMISIÓN Y MATRÍCULA',
   ]);
@@ -140,11 +152,64 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
 
   dataSource = new MatTableDataSource<UnidadAsistenciaRow>([]);
 
-  // =========================
-  // ✅ UMBRALES OFICIALES
-  // =========================
+  // ✅ UMBRALES
   readonly MAX_ROJO = 50;
   readonly MAX_AMARILLO = 80;
+
+  // =========================
+  // ✅ NUEVO: módulos faltantes (UI)
+  // =========================
+  modules = computed<DashboardModuleCard[]>(() => {
+    
+      const sem = this.semestreSig();
+    return [
+      {
+        key: 'riesgo',
+        title: 'Riesgo académico',
+        description: 'Consolidado por unidad/programa y acceso a estudiantes en riesgo.',
+        icon: 'report',
+        cta: 'Ver análisis',
+        route: '/oame/riesgo',
+        disabled: false,
+        badge: '',
+      },
+      {
+        key: 'alertas',
+        title: 'Alertas',
+        description: 'Alertas activas por unidad y seguimiento de casos priorizados.',
+        icon: 'notifications',
+        cta: 'Ver alertas',
+        route: '/oame/alertas',
+        disabled: false,
+        badge: '',
+      },
+      {
+        key: 'acompanamientos',
+        title: 'Acompañamientos',
+        description: 'Registro y estado de acompañamientos por unidad/programa.',
+        icon: 'handshake',
+        cta: 'Ver acompañamientos',
+        route: '/oame/acompanamientos',
+        disabled: false,
+        badge: '',
+      },
+      {
+        key: 'rendimiento',
+        title: 'Rendimiento y parciales',
+        description: 'Acceso al buscador de estudiantes y ficha (calificaciones/parciales).',
+        icon: 'school',
+        cta: 'Ir a buscador',
+        route: '/oame/estudiantes',
+        disabled: false,
+        badge: `Sem ${sem}`,
+      },
+    ];
+  });
+
+  abrirModulo(m: DashboardModuleCard): void {
+    if (m.disabled || !m.route) return;
+    this.router.navigate([m.route], { queryParams: { semestre: this.semestreCtrl.value } });
+  }
 
   // =========================
   // KPI (sobre rowsAcademicas)
@@ -183,7 +248,6 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     const dataAcad = this.rowsAcademicas();
     this.dataSource.data = dataAcad;
 
-    // ✅ recalcular paginación al cambiar data
     queueMicrotask(() => this.syncPagination(true));
 
     if (!this.viewReady()) return;
@@ -192,6 +256,7 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
 
   constructor() {
     this.destroyRef.onDestroy(() => {
+      this.loadSub?.unsubscribe(); // ✅ NUEVO
       this.barChart?.destroy();
       this.donutChart?.destroy();
     });
@@ -201,24 +266,48 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    // ✅ fijar pageSize inicial sin tocar tu paginator options
     this.paginator.pageSize = this.pageSize();
 
-    // ✅ sincronizar UI custom cuando el paginator cambie (por código o por eventos)
     this.paginator.page
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.syncPagination(false));
 
     this.dataSource.filterPredicate = (data, filter) =>
-      (data.des_unidad ?? '').toLowerCase().includes(filter.trim().toLowerCase());
+      (data.des_unidad ?? '').toLowerCase().includes((filter ?? '').trim().toLowerCase());
 
     this.viewReady.set(true);
 
+    // ✅ 1) Al entrar: si viene ?semestre en URL, úsalo
+    const semFromUrl = Number(this.route.snapshot.queryParamMap.get('semestre'));
+    if (Number.isFinite(semFromUrl) && semFromUrl > 0) {
+      this.semestreCtrl.setValue(semFromUrl, { emitEvent: false });
+      this.semestreSig.set(semFromUrl);
+    } else {
+      // asegura consistencia (por si el form arranca con 20252)
+      this.semestreSig.set(this.semestreCtrl.value);
+    }
+
+    // ✅ Cargar con el semestre ya sincronizado
     this.cargar();
 
+    // ✅ 2) Cuando cambie semestre: actualiza URL + recarga
     this.semestreCtrl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.cargar());
+      .subscribe((v) => {
+        const sem = (v ?? 20252);
+
+        this.semestreSig.set(sem);
+
+        // ✅ actualiza URL sin recargar (y sin perder otros params)
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { semestre: sem },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+
+        this.cargar();
+      });
 
     this.qCtrl.valueChanges
       .pipe(
@@ -228,8 +317,6 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
       )
       .subscribe((v) => {
         this.dataSource.filter = v ?? '';
-
-        // ✅ al filtrar, ir a página 1 (estándar UX)
         queueMicrotask(() => this.syncPagination(true));
       });
   }
@@ -241,19 +328,25 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.api.listarUnidades(semestre, q).subscribe({
+    // ✅ NUEVO: cancela petición anterior para evitar race
+    this.loadSub?.unsubscribe();
+
+    this.loadSub = this.api.listarUnidades(semestre, q).subscribe({
       next: (res) => {
         this.rows.set(res?.data ?? []);
         this.loading.set(false);
-
-        // ✅ al cargar, ir a página 1
         queueMicrotask(() => this.syncPagination(true));
       },
       error: (err) => {
-        this.error.set(err?.message ?? 'Error cargando datos');
+        // ✅ NUEVO: error más robusto (sin cambiar tu UI)
+        const msg =
+          err?.error?.message ??
+          err?.message ??
+          'Error cargando datos';
+
+        this.error.set(msg);
         this.rows.set([]);
         this.loading.set(false);
-
         queueMicrotask(() => this.syncPagination(true));
       },
     });
@@ -265,7 +358,6 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     });
   }
 
-  // ✅ ESTE ES EL MÉTODO REAL QUE PINTA
   badgeClass(p: string | null): string {
     const n = this.toNum(p);
     if (n === null) return 'badge badge-muted';
@@ -286,13 +378,9 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     return clamped;
   }
 
-  // ==========================================================
-  // ✅ NUEVO: lógica paginación numérica consecutiva
-  // ==========================================================
   private syncPagination(resetToFirst: boolean): void {
     if (!this.paginator) return;
 
-    // MatTableDataSource usa filteredData para el largo real
     const totalItems = this.dataSource.filteredData?.length ?? 0;
 
     const size = this.pageSize();
@@ -303,12 +391,10 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     if (resetToFirst) {
       this.paginator.firstPage();
     } else {
-      // clamp defensivo si el filtro reduce el total y quedaste fuera
       const maxIndex = Math.max(0, pages - 1);
       if (this.paginator.pageIndex > maxIndex) {
         this.paginator.pageIndex = maxIndex;
-        // forzar render
-        this.paginator._changePageSize(size);
+        this.paginator._changePageSize(size); // ✅ NO TOCO tu lógica (se queda)
       }
     }
 
@@ -325,8 +411,7 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     if (this.paginator.pageIndex === targetIndex) return;
 
     this.paginator.pageIndex = targetIndex;
-    // dispara la actualización interna del datasource
-    this.paginator._changePageSize(this.paginator.pageSize);
+    this.paginator._changePageSize(this.paginator.pageSize); // ✅ NO TOCO tu lógica (se queda)
     this.syncPagination(false);
   }
 
@@ -340,9 +425,6 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     this.goToPage(this.currentPage() + 1);
   }
 
-  // =========================
-  // Charts (sobre rowsAcademicas)
-  // =========================
   private renderCharts() {
     const data = this.rowsAcademicas();
 
@@ -350,6 +432,15 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
     const donutEl = this.donutCanvas?.nativeElement ?? null;
 
     if (!barEl && !donutEl) return;
+
+    // ✅ NUEVO: si no hay data, limpia charts y evita basura/errores
+    if (!data || data.length === 0) {
+      this.barChart?.destroy();
+      this.donutChart?.destroy();
+      this.barChart = undefined;
+      this.donutChart = undefined;
+      return;
+    }
 
     const top = [...data]
       .map((r) => ({ ...r, p: this.toNum(r.porcentaje_asistencia) }))
@@ -362,7 +453,7 @@ export class OameAsistenciaDashboardComponent implements AfterViewInit {
       this.barChart = new Chart(barEl, {
         type: 'bar',
         data: {
-          labels: top.map((r) => r.des_unidad),
+          labels: top.map((r) => r.des_unidad ?? '—'), // ✅ defensivo
           datasets: [
             {
               label: '% Asistencia (Top 10)',

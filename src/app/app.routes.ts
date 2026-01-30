@@ -8,6 +8,12 @@ import { OameAsistenciaUnidadDetalleComponent } from './oame/asistencia/pages/oa
 import { OameAsistenciaProgramaDetalleComponent } from './oame/asistencia/pages/oame-asistencia-programa-detalle/oame-asistencia-programa-detalle.component';
 import { OameFichaEstudianteComponent } from './oame/asistencia/pages/oame-fichaestudiante/oame-fichaestudiante.component';
 
+// ✅ NUEVO: placeholders / análisis faltantes
+import { OameRiesgoDashboardComponent } from './oame/analisis/page/oame-riesgo-dashboard/oame-riesgo-dashboard.component';
+import { OameAlertasDashboardComponent } from './oame/analisis/page/oame-alertas-dashboard/oame-alertas-dashboard.component';
+import { OameAcompanamientosDashboardComponent } from './oame/analisis/page/oame-acompanamientos-dashboard/oame-acompanamientos-dashboard.component';
+import { OameEstudiantesBuscarComponent } from './oame/analisis/page/oame-estudiantes-buscar/oame-estudiantes-buscar.component';
+
 export const routes: Routes = [
   {
     path: '',
@@ -28,6 +34,28 @@ export const routes: Routes = [
         path: 'oame/dashboard',
         component: OameAsistenciaDashboardComponent,
         data: { title: 'OAME · Monitoreo y Seguimiento' },
+      },
+
+      // ✅ NUEVO: análisis faltantes (por ahora placeholders)
+      {
+        path: 'oame/riesgo',
+        component: OameRiesgoDashboardComponent,
+        data: { title: 'OAME · Riesgo académico' },
+      },
+      {
+        path: 'oame/alertas',
+        component: OameAlertasDashboardComponent,
+        data: { title: 'OAME · Alertas' },
+      },
+      {
+        path: 'oame/acompanamientos',
+        component: OameAcompanamientosDashboardComponent,
+        data: { title: 'OAME · Acompañamientos' },
+      },
+      {
+        path: 'oame/estudiantes',
+        component: OameEstudiantesBuscarComponent,
+        data: { title: 'OAME · Estudiantes' },
       },
 
       // 🔹 Detalle Unidad

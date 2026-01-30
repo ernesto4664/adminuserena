@@ -44,6 +44,10 @@ export class AppShellComponent {
   // ✅ Título dinámico del header
   crumbTitle = signal<string>('Inicio');
 
+  // ✅ Submenú OAME (no afecta navegación de OAME)
+  oameOpen = signal(true);
+  oameSemestre = signal<string>('20252'); // default razonable
+  
   constructor() {
     // ✅ set inicial (por si entran directo a /oame/dashboard, etc)
     queueMicrotask(() => {
@@ -58,11 +62,19 @@ export class AppShellComponent {
       )
       .subscribe(() => {
         this.crumbTitle.set(this.getDeepestRouteTitle() ?? 'Inicio');
+        this.syncOameSemestreFromUrl();
       });
   }
 
   toggleSidebar() {
     this.collapsed.update((v) => !v);
+  }
+
+  // ✅ Click en flecha: abre/cierra submenú SIN navegar a dashboard
+  toggleOameSubmenu(ev: MouseEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.oameOpen.update((v) => !v);
   }
 
   // =========================
@@ -75,5 +87,13 @@ export class AppShellComponent {
 
     const title = ar?.snapshot?.data?.['title'];
     return typeof title === 'string' && title.trim() ? title : null;
+  }
+
+    private syncOameSemestreFromUrl() {
+    const tree = this.router.parseUrl(this.router.url);
+    const s = tree.queryParams?.['semestre'];
+    if (typeof s === 'string' && s.trim()) {
+      this.oameSemestre.set(s.trim());
+    }
   }
 }
