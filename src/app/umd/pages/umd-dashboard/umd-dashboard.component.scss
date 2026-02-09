@@ -1,0 +1,80 @@
+.page {
+  padding: 16px;
+}
+
+.page-header {
+  margin-bottom: 12px;
+
+  .title {
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .sub {
+      margin: 4px 0 0;
+      opacity: 0.75;
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+
+  mat-icon {
+    opacity: 0.85;
+  }
+
+  .text {
+    .label {
+      font-weight: 700;
+    }
+    .hint {
+      opacity: 0.75;
+      font-size: 13px;
+    }
+  }
+}
+
+.card.muted {
+  opacity: 0.75;
+}
+
+.note {
+  margin-top: 12px;
+  padding: 12px;
+
+  .note-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .note-body {
+    opacity: 0.8;
+  }
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card-link:focus-visible mat-card.card {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 14px; // ajusta si tu card usa otro radio
+}

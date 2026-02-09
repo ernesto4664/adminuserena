@@ -18,7 +18,7 @@
     <div class="nav-scroll">
       <mat-nav-list class="nav">
 
-        <!-- INICIO (placeholder - no navega a nada por ahora) -->
+        <!-- INICIO -->
         <a
           mat-list-item
           routerLink="/inicio"
@@ -29,7 +29,7 @@
           <span matListItemTitle *ngIf="!collapsed()">Inicio</span>
         </a>
 
-        <!-- ✅ OAME = dashboard (click navega). Flecha solo expande submenú -->
+        <!-- ✅ OAME -->
         <a
           mat-list-item
           routerLink="/oame/dashboard"
@@ -40,7 +40,6 @@
           <mat-icon matListItemIcon>insights</mat-icon>
           <span matListItemTitle *ngIf="!collapsed()">OAME</span>
 
-          <!-- Flecha (solo UI) -->
           <span class="spacer"></span>
 
           <button
@@ -54,7 +53,6 @@
           </button>
         </a>
 
-        <!-- ✅ Submenú OAME (NO incluye Dashboard porque OAME ya lo abre) -->
         <div class="submenu" *ngIf="!collapsed() && oameOpen()">
           <a
             mat-list-item
@@ -105,7 +103,7 @@
           </a>
         </div>
 
-        <!-- placeholders para otros módulos -->
+        <!-- placeholders -->
         <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">
           <mat-icon matListItemIcon>domain</mat-icon>
           <span matListItemTitle *ngIf="!collapsed()">AGDDFI</span>
@@ -116,10 +114,54 @@
           <span matListItemTitle *ngIf="!collapsed()">DGAE</span>
         </a>
 
-        <a mat-list-item class="disabled-link" (click)="$event.preventDefault()">
+        <!-- ✅ UMD = dashboard (click navega). Flecha solo expande submenú -->
+        <a
+          mat-list-item
+          routerLink="/umd/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="umd-root"
+        >
           <mat-icon matListItemIcon>shield</mat-icon>
           <span matListItemTitle *ngIf="!collapsed()">UMD</span>
+
+          <span class="spacer"></span>
+
+          <button
+            mat-icon-button
+            class="subtoggle"
+            *ngIf="!collapsed()"
+            (click)="toggleUmdSubmenu($event)"
+            [attr.aria-label]="umdOpen() ? 'Cerrar menú UMD' : 'Abrir menú UMD'"
+          >
+            <mat-icon>{{ umdOpen() ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
         </a>
+
+        <!-- Submenú UMD (placeholders listos para cuando amarramos pantallas) -->
+        <div class="submenu" *ngIf="!collapsed() && umdOpen()">
+          <a
+            mat-list-item
+            class="subitem"
+            routerLink="/umd/docentes"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>person_search</mat-icon>
+            <span matListItemTitle>Docentes</span>
+          </a>
+
+          <a
+            mat-list-item
+            class="subitem"
+            routerLink="/umd/gestores"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <mat-icon matListItemIcon>manage_accounts</mat-icon>
+            <span matListItemTitle>Gestores curriculares</span>
+          </a>
+        </div>
 
       </mat-nav-list>
     </div>
@@ -136,11 +178,10 @@
     <!-- HEADER -->
     <mat-toolbar class="topbar" color="primary">
       <button mat-icon-button (click)="toggleSidebar()">
-        <!-- <mat-icon>menu</mat-icon>-->
+        <!-- <mat-icon>menu</mat-icon> -->
       </button>
 
       <div class="crumb">
-        <!-- ✅ dinámico -->
         <span class="crumb-title">{{ crumbTitle() }}</span>
       </div>
 

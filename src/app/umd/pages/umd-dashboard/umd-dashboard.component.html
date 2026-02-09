@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-header">
+    <div class="title">
+      <h1>UMD</h1>
+      <p class="sub">Desarrollo Docente · Panel inicial</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- ✅ DOCENTES -->
+    <a
+      class="card-link"
+      [routerLink]="['/umd/docentes']"
+      aria-label="Ir a Docentes"
+    >
+      <mat-card class="card" matRipple>
+        <mat-icon>person_search</mat-icon>
+        <div class="text">
+          <div class="label">Docentes</div>
+          <div class="hint">Listado + ficha (API lista)</div>
+        </div>
+      </mat-card>
+    </a>
+
+    <!-- ✅ GESTORES -->
+    <a
+      class="card-link"
+      [routerLink]="['/umd/gestores']"
+      aria-label="Ir a Gestores curriculares"
+    >
+      <mat-card class="card" matRipple>
+        <mat-icon>manage_accounts</mat-icon>
+        <div class="text">
+          <div class="label">Gestores curriculares</div>
+          <div class="hint">Listado + ficha</div>
+        </div>
+      </mat-card>
+    </a>
+
+    <!-- PLACEHOLDERS -->
+    <div class="card-link">
+      <mat-card class="card muted" aria-disabled="true">
+        <mat-icon>school</mat-icon>
+        <div class="text">
+          <div class="label">Capacitaciones</div>
+          <div class="hint">Pendiente de fuente institucional</div>
+        </div>
+      </mat-card>
+    </div>
+
+    <div class="card-link">
+      <mat-card class="card muted" aria-disabled="true">
+        <mat-icon>insights</mat-icon>
+        <div class="text">
+          <div class="label">Indicadores UMD</div>
+          <div class="hint">Pendiente de fuente institucional</div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <mat-card class="note">
+    <div class="note-title">Estado</div>
+    <div class="note-body">
+      El dashboard UMD está creado para navegación y consistencia UI.
+      Ahora amarramos pantallas reales (Docentes / Gestores) cuando definamos la UX y endpoints finales.
+    </div>
+  </mat-card>
+</div>

@@ -302,4 +302,17 @@ export class OameAsistenciaProgramaDetalleComponent implements AfterViewInit {
       queryParamsHandling: 'merge',
     });
   }
+
+  sinRegistrosSemestre(row: any): boolean {
+    // porcentaje puede venir como '-', null, '' o número
+    const p = row?.porcentaje_asistencia ?? row?.porcentaje ?? row?.asistencia_pct ?? null;
+    const n = this.toNum(p);
+
+    const clases = Number(row?.clases ?? 0);
+    const asist = Number(row?.asistencias ?? 0);
+
+    // Criterio: no hay clases registradas en el semestre
+    // (si clases=0, asistencias=0 y porcentaje no es numérico)
+    return clases === 0 && asist === 0 && n === null;
+  }
 }

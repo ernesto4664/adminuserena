@@ -18,7 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
   selector: 'app-shell',
   standalone: true,
   imports: [
-    CommonModule, // ✅ necesario para *ngIf, *ngFor, etc
+    CommonModule,
     RouterOutlet,
     RouterModule,
     MatSidenavModule,
@@ -44,17 +44,20 @@ export class AppShellComponent {
   // ✅ Título dinámico del header
   crumbTitle = signal<string>('Inicio');
 
-  // ✅ Submenú OAME (no afecta navegación de OAME)
-  oameOpen = signal(true);
-  oameSemestre = signal<string>('20252'); // default razonable
-  
+  // ✅ Submenú OAME
+  oameOpen = signal(false);
+  oameSemestre = signal<string>('20252');
+
+  // ✅ Submenú UMD (UI)
+  umdOpen = signal(false);
+
   constructor() {
-    // ✅ set inicial (por si entran directo a /oame/dashboard, etc)
+    // set inicial
     queueMicrotask(() => {
       this.crumbTitle.set(this.getDeepestRouteTitle() ?? 'Inicio');
     });
 
-    // ✅ actualizar cuando cambia la ruta
+    // actualizar cuando cambia la ruta
     this.router.events
       .pipe(
         filter((e): e is NavigationEnd => e instanceof NavigationEnd),
@@ -70,18 +73,24 @@ export class AppShellComponent {
     this.collapsed.update((v) => !v);
   }
 
-  // ✅ Click en flecha: abre/cierra submenú SIN navegar a dashboard
+  // Click flecha OAME: abre/cierra submenú SIN navegar
   toggleOameSubmenu(ev: MouseEvent) {
     ev.preventDefault();
     ev.stopPropagation();
     this.oameOpen.update((v) => !v);
   }
 
+  // Click flecha UMD: abre/cierra submenú SIN navegar
+  toggleUmdSubmenu(ev: MouseEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.umdOpen.update((v) => !v);
+  }
+
   // =========================
   // Helpers
   // =========================
   private getDeepestRouteTitle(): string | null {
-    // buscamos la ruta más profunda desde el root ActivatedRoute
     let ar: ActivatedRoute | null = this.route;
     while (ar?.firstChild) ar = ar.firstChild;
 
@@ -89,7 +98,7 @@ export class AppShellComponent {
     return typeof title === 'string' && title.trim() ? title : null;
   }
 
-    private syncOameSemestreFromUrl() {
+  private syncOameSemestreFromUrl() {
     const tree = this.router.parseUrl(this.router.url);
     const s = tree.queryParams?.['semestre'];
     if (typeof s === 'string' && s.trim()) {

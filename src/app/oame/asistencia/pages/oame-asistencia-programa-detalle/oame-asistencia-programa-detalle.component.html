@@ -16,12 +16,12 @@
   </div>
 
   <div class="información">
-      <h1>Detalle de Programa</h1>
+    <h1>Detalle de Programa</h1>
 
-      <p class="sub">
-        Semestre: {{ semestreCtrl.value }} · Programa ID: {{ idPrograma() ?? '—' }}
-        @if (idUnidad()) { · Unidad ID: {{ idUnidad() }} }
-      </p>
+    <p class="sub">
+      Semestre: {{ semestreCtrl.value }} · Programa ID: {{ idPrograma() ?? '—' }}
+      @if (idUnidad()) { · Unidad ID: {{ idUnidad() }} }
+    </p>
   </div>
 
   @if (loading()) {
@@ -82,6 +82,11 @@
         </span>
       </div>
 
+      <!-- ✅ Leyenda (Opción A): evita que parezca bug -->
+      <div class="muted" style="margin: 8px 0 10px 0;">
+        “Sin registros” indica estudiantes sin clases/asistencias registradas en el semestre seleccionado.
+      </div>
+
       <div class="table-wrap">
         <table mat-table [dataSource]="estudiantes()">
 
@@ -107,23 +112,37 @@
           <ng-container matColumnDef="porcentaje">
             <th mat-header-cell *matHeaderCellDef>% Asistencia</th>
             <td mat-cell *matCellDef="let row">
-              <span [class]="badgeClass(row.porcentaje_asistencia ?? null)">
-                {{ row.porcentaje_asistencia ?? '—' }}
-              </span>
+              @if (sinRegistrosSemestre(row)) {
+                <span class="badge badge-muted">
+                  Sin registros
+                </span>
+              } @else {
+                <span [class]="badgeClass(row.porcentaje_asistencia ?? null)">
+                  {{ row.porcentaje_asistencia ?? '—' }}
+                </span>
+              }
             </td>
           </ng-container>
 
           <ng-container matColumnDef="clases">
             <th mat-header-cell *matHeaderCellDef>Clases</th>
             <td mat-cell *matCellDef="let row">
-              {{ row.total_clases ?? 0 }}
+              @if (sinRegistrosSemestre(row)) {
+                —
+              } @else {
+                {{ row.total_clases ?? 0 }}
+              }
             </td>
           </ng-container>
 
           <ng-container matColumnDef="asistencias">
             <th mat-header-cell *matHeaderCellDef>Asistencias</th>
             <td mat-cell *matCellDef="let row">
-              {{ row.total_asistencias ?? 0 }}
+              @if (sinRegistrosSemestre(row)) {
+                —
+              } @else {
+                {{ row.total_asistencias ?? 0 }}
+              }
             </td>
           </ng-container>
 

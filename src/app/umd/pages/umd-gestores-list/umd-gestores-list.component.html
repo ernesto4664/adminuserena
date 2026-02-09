@@ -1,0 +1,159 @@
+<div class="page">
+  <div class="page-header">
+    <div class="title">
+      <a class="back" (click)="volver()">
+        <mat-icon>arrow_back</mat-icon>
+        Volver
+      </a>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <div class="informacion">
+    <h1>Gestores curriculares</h1>
+
+    <p class="sub">
+      Año: <strong>{{ anioCtrl.value }}</strong>
+      · Total: <strong>{{ total() }}</strong>
+    </p>
+  </div>
+
+  <mat-card class="filters">
+    <mat-form-field appearance="outline" class="anio">
+      <mat-label>Año</mat-label>
+      <input matInput type="number" [formControl]="anioCtrl" />
+    </mat-form-field>
+
+    <!-- ✅ Unidad por NOMBRE (igual a Docentes) -->
+    <mat-form-field appearance="outline" class="unidad">
+      <mat-label>Unidad</mat-label>
+      <input
+        matInput
+        type="text"
+        [formControl]="unidadNombreCtrl"
+        placeholder="Ej: ciencias"
+        autocomplete="off"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        aria-label="Limpiar"
+        (click)="unidadNombreCtrl.setValue('')"
+        *ngIf="unidadNombreCtrl.value"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="grow">
+      <mat-label>Buscar</mat-label>
+      <input matInput placeholder="RUT, nombre..." [formControl]="qCtrl" />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        aria-label="Limpiar"
+        (click)="qCtrl.setValue('')"
+        *ngIf="qCtrl.value"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </mat-card>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (error()) {
+    <mat-card class="error">
+      <mat-icon color="warn">error</mat-icon>
+      <div>{{ error() }}</div>
+    </mat-card>
+  }
+
+  <mat-card class="panel table-panel">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="rows()" class="table">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let r">{{ getId(r) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let r">{{ getNombre(r) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="rut">
+          <th mat-header-cell *matHeaderCellDef>RUT</th>
+          <td mat-cell *matCellDef="let r">{{ getRut(r) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="unidad">
+          <th mat-header-cell *matHeaderCellDef>Unidad</th>
+          <td mat-cell *matCellDef="let r">{{ getUnidad(r) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let r" class="actions-cell">
+            <button mat-stroked-button (click)="abrirFicha(r); $event.stopPropagation()">
+              <mat-icon>visibility</mat-icon>
+              Ver ficha
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="row"
+          (click)="abrirFicha(row)"
+        ></tr>
+      </table>
+    </div>
+
+    @if (lastPage() > 1) {
+      <div class="custom-pagination">
+        <button
+          type="button"
+          class="arrow"
+          [disabled]="page() === 1"
+          (click)="prevPage()">
+          ‹
+        </button>
+
+        <button
+          type="button"
+          class="page"
+          *ngFor="let p of pages()"
+          [class.active]="p === page()"
+          (click)="goToPage(p)">
+          {{ p }}
+        </button>
+
+        <button
+          type="button"
+          class="arrow"
+          [disabled]="page() === lastPage()"
+          (click)="nextPage()">
+          ›
+        </button>
+      </div>
+    }
+
+    @if (!loading() && !rows().length) {
+      <div class="empty muted">Sin resultados</div>
+    }
+  </mat-card>
+</div>

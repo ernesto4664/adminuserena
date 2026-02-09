@@ -103,6 +103,16 @@
     }
   }
 
+  span.mdc-list-item__content {
+        display: flex !important;
+  }
+
+  span.mat-mdc-list-item-unscoped-content.mdc-list-item__secondary-text {
+    place-content: center;
+    margin-bottom: 10px;
+
+  }
+
   /* placeholders deshabilitados */
   .disabled-link {
     cursor: default;

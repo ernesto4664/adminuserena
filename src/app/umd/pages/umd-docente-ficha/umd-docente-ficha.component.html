@@ -1,0 +1,190 @@
+<div class="page">
+  <div class="page-header">
+    <button mat-button class="back" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+
+    <div class="actions">
+      <button mat-stroked-button (click)="cargar()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <div class="informacion">
+    <div class="title">
+      <h1>Ficha docente</h1>
+      <div class="sub">
+        Año: <strong>{{ anioCtrl.value }}</strong>
+        · ID: <strong>{{ id() ?? '—' }}</strong>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (error()) {
+    <mat-card class="error">
+      <mat-icon color="warn">error</mat-icon>
+      <div>{{ error() }}</div>
+    </mat-card>
+  }
+
+  @if (data()) {
+    <mat-card class="info-banner">
+      <div class="info-banner__inner">
+        <mat-icon class="info-banner__icon">info_outline</mat-icon>
+        <div class="info-banner__text">
+          Aquí podrás visualizar detalladamente la información del docente seleccionado.
+        </div>
+        <button mat-icon-button class="info-banner__close" aria-label="cerrar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+
+    <mat-card class="tabs-card">
+      <div class="tabs-seg">
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'personal'"
+          (click)="setTab('personal')">
+          Información personal
+        </button>
+
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'academico'"
+          (click)="setTab('academico')">
+          Información académica
+        </button>
+
+        <button
+          mat-button
+          class="tab-btn"
+          [class.active]="tab() === 'actividad'"
+          (click)="setTab('actividad')">
+          Actividad / Estado
+        </button>
+      </div>
+
+      @if (tab() === 'personal') {
+        <div class="tab-content grid-2">
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>person</mat-icon>
+              <span>Datos personales</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Nombre</div>
+              <div class="v">{{ nombreCompleto() }}</div>
+
+              <div class="k">RUT</div>
+              <div class="v">{{ rut() }}</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>info</mat-icon>
+              <span>Meta</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Fuente</div>
+              <div class="v">{{ meta()?.fuente ?? '—' }}</div>
+
+              <div class="k">Estado</div>
+              <div class="v">{{ meta()?.estado ?? '—' }}</div>
+
+              <div class="k">Observación</div>
+              <div class="v">{{ meta()?.observacion ?? '—' }}</div>
+            </div>
+          </mat-card>
+        </div>
+      }
+
+      @if (tab() === 'academico') {
+        <div class="tab-content grid-2">
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>school</mat-icon>
+              <span>Adscripción</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Unidad</div>
+              <div class="v">{{ unidadNombre() }}</div>
+
+              <div class="k">Programa</div>
+              <div class="v">{{ programaNombre() }}</div>
+
+              <div class="k">Código</div>
+              <div class="v">{{ programaCodigo() }}</div>
+            </div>
+          </mat-card>
+
+          <mat-card class="panel">
+            <div class="panel-title">
+              <mat-icon>verified</mat-icon>
+              <span>Disponibilidad de fuentes</span>
+            </div>
+
+            <div class="kv">
+              <div class="k">Formación académica</div>
+              <div class="v">{{ disponibleFlag(data()?.formacion_academica) }} · {{ fuenteLabel(data()?.formacion_academica) }}</div>
+
+              <div class="k">Capacitaciones UMD</div>
+              <div class="v">{{ disponibleFlag(data()?.capacitaciones_umd) }} · {{ fuenteLabel(data()?.capacitaciones_umd) }}</div>
+
+              <div class="k">Encuestas docentes</div>
+              <div class="v">{{ disponibleFlag(data()?.encuestas_docentes) }} · {{ fuenteLabel(data()?.encuestas_docentes) }}</div>
+            </div>
+          </mat-card>
+        </div>
+      }
+
+      @if (tab() === 'actividad') {
+        <div class="tab-content">
+          <div class="grid-2">
+            <mat-card class="panel">
+              <div class="panel-title">
+                <mat-icon>work</mat-icon>
+                <span>Actividad docente</span>
+              </div>
+
+              <div class="kv">
+                <div class="k">Estado</div>
+                <div class="v">{{ disponibleFlag(data()?.actividad_docente) }}</div>
+
+                <div class="k">Fuente</div>
+                <div class="v">{{ fuenteLabel(data()?.actividad_docente) }}</div>
+              </div>
+
+              <div class="muted" style="margin-top:10px;">
+                Si backend entrega “detalle”, aquí luego lo renderizamos (tabla/accordion).
+              </div>
+            </mat-card>
+
+            <mat-card class="panel">
+              <div class="panel-title">
+                <mat-icon>description</mat-icon>
+                <span>Observación</span>
+              </div>
+              <div class="muted">
+                {{ meta()?.observacion ?? '—' }}
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      }
+    </mat-card>
+  }
+</div>
